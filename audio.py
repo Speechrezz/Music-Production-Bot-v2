@@ -58,17 +58,17 @@ def generate_waveform(audio: Audio, data_stream: io.BytesIO, color: str | tuple[
     plt.close()
     data_stream.seek(0)
 
-def get_loudness_str(audio: Audio, debug = False):
+def get_loudness_info(audio: Audio, debug = False):
     y = audio.get_mono_audio()
     max_loudness = np.max(y)
     try:
         # measure the loudness first 
         meter = pyln.Meter(audio.sample_rate) # create BS.1770 meter
-        loudness = meter.integrated_loudness(y)
+        loudness: float = meter.integrated_loudness(y)
     except ValueError: # is thrown if file is too short
         if debug:
-            return f"max_loudness={max_loudness:.2f}"
-        return ""
+            return (f"max_loudness={max_loudness:.2f}", None)
+        return (str("ValueError"), None)
     if debug:
-        return f"{loudness:.2f} LUFS, max_loudness={max_loudness:.2f}"
-    return f"**Integrated Loudness:** {loudness:.2f} LUFS"
+        return (f"{loudness:.2f} LUFS, max_loudness={max_loudness:.2f}", loudness)
+    return (f"**Integrated Loudness:** {loudness:.2f} LUFS", loudness)
