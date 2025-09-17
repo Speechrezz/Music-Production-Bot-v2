@@ -3,14 +3,11 @@ import numpy as np
 from dotenv import load_dotenv
 from typing import Optional, cast
 import io
-import asyncio
-import platform
 
 from audio import discord_bytes_to_numpy, generate_waveform, get_loudness_info
 
 import discord
 from discord import app_commands
-from discord.ext import commands
 
 from database import Database
 
@@ -34,10 +31,8 @@ class MyClient(discord.Client):
         self.tree.add_command(ActiveChannels())
 
         TEST_GUILD = discord.Object(id=int(cast(str, os.getenv("TEST_GUILD_ID")))) # Test server
-
         self.tree.copy_global_to(guild=TEST_GUILD)
         await self.tree.sync(guild=TEST_GUILD)
-
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -53,6 +48,8 @@ async def on_ready():
     for guild in client.guilds:
         print(f"    {guild.name}")
         await client.db.upsert_guild(guild)
+
+    await client.tree.sync()
 
     print('\n------\nReady!\n------')
 
