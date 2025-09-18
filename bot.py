@@ -120,7 +120,7 @@ async def leaderboard(interaction: discord.Interaction):
         except discord.NotFound:
             member = None
 
-        username = member.mention if member else ""
+        username = member.display_name if member else ""
         entry = [str(i + 1), username, f"{raw_entry.loudness_lufs:.2f}", raw_entry.message_url]
         leaderboard_list.append(entry)
 
